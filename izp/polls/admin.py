@@ -11,7 +11,7 @@ class ChoiceInline(admin.TabularInline):
 
 class BaseQuestionAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['poll', 'question_text', 'depends_on']})
+        (None, {'fields': ['poll', 'question_text', 'depends_on', 'winner_choice']})
     ]
 
     list_display = ('question_text', )
