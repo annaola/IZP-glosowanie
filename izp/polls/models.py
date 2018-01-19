@@ -45,6 +45,7 @@ class Question(models.Model):
     deactivation_time = models.DateTimeField(null=True, blank=True)
     depends_on = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True)
+    winner_choice = models.ForeignKey("Choice", related_name="+", on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.question_text
@@ -52,9 +53,8 @@ class Question(models.Model):
     def satisfied(self):
         if self.deactivation_time:
             return self.deactivation_time < timezone.now() and \
-                Choice.objects.filter(question__exact=self).order_by('-votes') \
-                .first() == Choice.objects.filter(question__exact=self) \
-                .get(winner__exact=True)
+                Choice.objects.filter(question__exact=self) \
+                .order_by('-votes').first() == winner_choice
 
     def is_available(self):
         """
@@ -135,7 +135,6 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField('Odpowiedź', max_length=200)
     votes = models.IntegerField('Liczba głosów', default=0)
-    winner = models.BooleanField('Wygrany', blank=True, default=False)
 
     def __str__(self):
         return self.choice_text
